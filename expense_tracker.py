@@ -1,14 +1,11 @@
-"""
-Expense Tracker - WeIntern Week 2 Task 1
-Tracks daily expenses, categorizes spending, and generates summaries.
-"""
+
 
 import csv
 import os
 from datetime import datetime
 from collections import defaultdict
 
-# ── Constants ────────────────────────────────────────────────────────────────
+
 
 DATA_FILE = "expenses.csv"
 FIELDNAMES = ["id", "date", "amount", "category", "description"]
@@ -18,7 +15,6 @@ CATEGORIES = [
 ]
 
 
-# ── File persistence ─────────────────────────────────────────────────────────
 
 def load_expenses():
     """Load expenses from CSV file. Returns a list of dicts."""
@@ -41,7 +37,7 @@ def save_expenses(expenses):
         writer.writerows(expenses)
 
 
-# ── Core functions ───────────────────────────────────────────────────────────
+
 
 def next_id(expenses):
     """Generate the next integer ID."""
@@ -52,7 +48,7 @@ def add_expense(expenses):
     """Prompt the user for expense details and append to the list."""
     print("\n─── Add Expense ───")
 
-    # Amount
+
     while True:
         try:
             amount = float(input("Amount (₹): ").strip())
@@ -62,7 +58,7 @@ def add_expense(expenses):
         except ValueError:
             print("  Please enter a positive number.")
 
-    # Category
+    
     print("Categories:")
     for i, cat in enumerate(CATEGORIES, 1):
         print(f"  {i}. {cat}")
@@ -76,10 +72,10 @@ def add_expense(expenses):
             pass
         print("  Invalid choice.")
 
-    # Description
+   
     description = input("Description: ").strip() or "—"
 
-    # Date
+
     date_str = input("Date (YYYY-MM-DD, leave blank for today): ").strip()
     if not date_str:
         date_str = datetime.today().strftime("%Y-%m-%d")
@@ -178,7 +174,6 @@ def monthly_summary(expenses):
         pct = (amt / grand) * 100
         print(f"  {cat:<15}  ₹{amt:>9.2f}  {pct:>6.1f}%")
 
-    # Optional pie chart
     try:
         import matplotlib.pyplot as plt
         labels = list(totals.keys())
@@ -206,7 +201,6 @@ def delete_expense(expenses):
     print("  ID not found.")
 
 
-# ── Main menu ────────────────────────────────────────────────────────────────
 
 def main():
     expenses = load_expenses()
