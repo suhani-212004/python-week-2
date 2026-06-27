@@ -1,11 +1,4 @@
-"""
-Web Scraper - WeIntern Week 2 Task 3
-Scrapes book data from books.toscrape.com across all pages
-and saves it to a CSV file.
 
-Target site : http://books.toscrape.com   (robots.txt allows scraping)
-Fields      : title, price, rating, availability, category, url
-"""
 
 import csv
 import time
@@ -13,13 +6,13 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 
-# ── Config ────────────────────────────────────────────────────────────────────
+
 
 BASE_URL   = "http://books.toscrape.com/catalogue/"
 START_URL  = "http://books.toscrape.com/catalogue/page-1.html"
 OUTPUT_CSV = "books.csv"
-DELAY_SEC  = 1.0          # polite delay between requests
-TIMEOUT    = 10           # seconds before giving up on a request
+DELAY_SEC  = 1.0
+TIMEOUT    = 10       
 
 FIELDNAMES = ["title", "price", "rating", "availability", "category", "url"]
 
@@ -28,15 +21,12 @@ RATING_MAP = {
     "One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5
 }
 
-# ── Logging ───────────────────────────────────────────────────────────────────
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(levelname)-8s  %(message)s"
 )
 
 
-# ── HTTP helpers ──────────────────────────────────────────────────────────────
 
 def get_page(url: str) -> BeautifulSoup | None:
     """
@@ -56,7 +46,6 @@ def get_page(url: str) -> BeautifulSoup | None:
     return None
 
 
-# ── Scraping logic ────────────────────────────────────────────────────────────
 
 def get_book_category(book_url: str) -> str:
     """
@@ -67,7 +56,7 @@ def get_book_category(book_url: str) -> str:
     if not soup:
         return "Unknown"
     breadcrumbs = soup.select("ul.breadcrumb li")
-    # Breadcrumb: Home > Category > Book title
+   
     if len(breadcrumbs) >= 3:
         return breadcrumbs[-2].get_text(strip=True)
     return "Unknown"
@@ -79,33 +68,28 @@ def parse_books(soup: BeautifulSoup) -> list[dict]:
     articles = soup.select("article.product_pod")
 
     for article in articles:
-        # Title
+       
         title_tag = article.select_one("h3 > a")
         title = title_tag["title"] if title_tag else "N/A"
 
-        # Price
         price_tag = article.select_one("p.price_color")
         price = price_tag.get_text(strip=True) if price_tag else "N/A"
 
-        # Star rating (stored as a CSS class word)
         rating_tag = article.select_one("p.star-rating")
         rating_word = rating_tag["class"][1] if rating_tag else "Zero"
         rating = RATING_MAP.get(rating_word, 0)
 
-        # Availability
         avail_tag = article.select_one("p.availability")
         availability = avail_tag.get_text(strip=True) if avail_tag else "N/A"
 
-        # Full URL of the individual book page
+ 
         href = title_tag["href"] if title_tag else ""
-        # hrefs look like: ../../path/to/book_id/index.html
+     
         book_url = BASE_URL + href.replace("../../", "")
 
-        # Category is fetched from the detail page
         category = get_book_category(book_url)
         logging.info("  Scraped: %s [★%s | %s]", title[:50], rating, category)
-        time.sleep(DELAY_SEC)   # be polite to the server
-
+        time.sleep(DELAY_SEC)   
         books.append({
             "title":        title,
             "price":        price,
@@ -126,7 +110,7 @@ def get_next_page_url(soup: BeautifulSoup) -> str | None:
     return None
 
 
-# ── CSV writer ────────────────────────────────────────────────────────────────
+
 
 def save_to_csv(books: list[dict], filename: str):
     with open(filename, "w", newline="", encoding="utf-8") as f:
@@ -136,7 +120,6 @@ def save_to_csv(books: list[dict], filename: str):
     logging.info("Saved %d records to %s", len(books), filename)
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
     all_books  = []
