@@ -1,11 +1,4 @@
-"""
-File Organizer - WeIntern Week 2 Task 2
-Automatically sorts files in a directory into categorized subfolders.
 
-Usage:
-    python file_organizer.py <source_dir>
-    python file_organizer.py <source_dir> --dry-run
-"""
 
 import os
 import shutil
@@ -14,38 +7,38 @@ import argparse
 from pathlib import Path
 from collections import defaultdict
 
-# ── Category map: extension → folder name ────────────────────────────────────
+
 
 CATEGORY_MAP = {
-    # Images
+   
     ".jpg": "Images", ".jpeg": "Images", ".png": "Images",
     ".gif": "Images", ".bmp": "Images", ".svg": "Images",
     ".webp": "Images", ".tiff": "Images", ".ico": "Images",
-    # Documents
+   
     ".pdf": "Documents", ".doc": "Documents", ".docx": "Documents",
     ".txt": "Documents", ".odt": "Documents", ".rtf": "Documents",
     ".xls": "Documents", ".xlsx": "Documents", ".ppt": "Documents",
     ".pptx": "Documents", ".csv": "Documents",
-    # Videos
+ 
     ".mp4": "Videos", ".mkv": "Videos", ".avi": "Videos",
     ".mov": "Videos", ".wmv": "Videos", ".flv": "Videos",
     ".webm": "Videos",
-    # Music
+  
     ".mp3": "Music", ".wav": "Music", ".flac": "Music",
     ".aac": "Music", ".ogg": "Music", ".m4a": "Music",
-    # Code
+  
     ".py": "Code", ".js": "Code", ".ts": "Code", ".html": "Code",
     ".css": "Code", ".java": "Code", ".c": "Code", ".cpp": "Code",
     ".h": "Code", ".sh": "Code", ".json": "Code", ".xml": "Code",
     ".yaml": "Code", ".yml": "Code", ".md": "Code", ".sql": "Code",
-    # Archives
+  
     ".zip": "Archives", ".tar": "Archives", ".gz": "Archives",
     ".rar": "Archives", ".7z": "Archives",
 }
 DEFAULT_FOLDER = "Others"
 
 
-# ── Logging setup ─────────────────────────────────────────────────────────────
+
 
 def setup_logging(log_path: Path):
     logging.basicConfig(
@@ -58,7 +51,6 @@ def setup_logging(log_path: Path):
     )
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
 
 def categorize(file_path: Path) -> str:
     """Return the target folder name for a given file."""
@@ -78,7 +70,6 @@ def unique_destination(dest: Path) -> Path:
         counter += 1
 
 
-# ── Core organizer ────────────────────────────────────────────────────────────
 
 def organize(source_dir: Path, dry_run: bool = False):
     """
@@ -95,10 +86,10 @@ def organize(source_dir: Path, dry_run: bool = False):
     mode_label = "[DRY RUN] " if dry_run else ""
     logging.info("%sOrganizing: %s", mode_label, source_dir)
 
-    stats = defaultdict(int)   # folder → number of files moved
+    stats = defaultdict(int)   
 
     for item in source_dir.iterdir():
-        # Skip hidden files, log file, and subdirectories
+       
         if item.name.startswith(".") or item.name == "organizer.log":
             continue
         if item.is_dir():
@@ -120,7 +111,6 @@ def organize(source_dir: Path, dry_run: bool = False):
 
         stats[folder_name] += 1
 
-    # ── Summary report ────────────────────────────────────────────────────────
     total = sum(stats.values())
     print("\n" + "═" * 50)
     print(f"  {'SUMMARY':^46}")
@@ -137,7 +127,7 @@ def organize(source_dir: Path, dry_run: bool = False):
     print()
 
 
-# ── CLI entry point ───────────────────────────────────────────────────────────
+
 
 def main():
     parser = argparse.ArgumentParser(
